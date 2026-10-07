@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070809">
+<title>Teyvat Script Terminal — mobile draft v0.3</title>
+<style>
+@font-face {
+  font-family: "Teyvat Script";
+  src: url(data:font/woff2;base64,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) format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+:root{
+  --bg:#050607;--panel:#0b0d10;--panel2:#0e1115;--line:#2b3036;--line2:#171a1e;
+  --text:#f1f2ef;--muted:#8c9298;--dim:#5d646b;--accent:#e62c78;--accent2:#ff5ca0;
+  --ok:#86df9a;--warn:#f2c16b;--shadow:0 18px 60px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{background:#030405;color-scheme:dark}
+body{margin:0;min-height:100vh;background:
+  linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px),
+  radial-gradient(circle at 100% 0,rgba(230,44,120,.09),transparent 24%),var(--bg);
+  background-size:24px 24px,24px 24px,auto,auto;color:var(--text);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:10;opacity:.16;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.025) 3px 4px)}
+button,textarea,input,select{font:inherit}
+button{color:inherit}
+.app{width:min(100%,520px);margin:auto;min-height:100vh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);position:relative}
+.header{padding:18px 16px 12px;border-bottom:1px solid var(--line);background:rgba(5,6,7,.94);position:sticky;top:0;z-index:8;backdrop-filter:blur(12px)}
+.kicker{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 12px var(--ok)}
+h1{font-size:20px;line-height:1.05;letter-spacing:.12em;margin:8px 0 5px;font-weight:800;text-transform:uppercase}
+.sub{display:flex;gap:8px;align-items:center;color:var(--dim);font-size:9px;letter-spacing:.13em;text-transform:uppercase;flex-wrap:wrap}
+.badge{border:1px solid var(--line);padding:4px 6px;color:var(--muted)}
+.badge.hot{border-color:rgba(230,44,120,.6);color:var(--accent2)}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 12px;border-bottom:1px solid var(--line);background:#07090b}
+.tab{border:1px solid var(--line);background:#0a0c0f;padding:10px 6px;font-size:10px;letter-spacing:.11em;text-transform:uppercase;cursor:pointer}
+.tab.active{border-color:var(--accent);background:linear-gradient(180deg,rgba(230,44,120,.16),rgba(230,44,120,.05));color:#fff;box-shadow:inset 0 -2px 0 var(--accent)}
+.main{padding:12px}
+.panel{border:1px solid var(--line);background:linear-gradient(180deg,rgba(14,17,21,.96),rgba(8,10,12,.96));box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden;position:relative}
+.panel:after{content:"";position:absolute;width:42px;height:2px;background:var(--accent);right:10px;top:0;box-shadow:0 0 10px rgba(230,44,120,.45)}
+.panel-head{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--line2);font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+.panel-head strong{color:#d6d8d6;font-weight:600}
+.screen{min-height:146px;padding:16px 14px 12px;display:flex;flex-direction:column;justify-content:center;position:relative;background:radial-gradient(circle at 85% 20%,rgba(230,44,120,.05),transparent 30%)}
+.teyvat{font-family:"Teyvat Script",serif;font-size:clamp(34px,10vw,52px);line-height:1.35;letter-spacing:.025em;word-break:break-word;white-space:pre-wrap;min-height:56px;text-shadow:0 0 18px rgba(255,255,255,.10)}
+.cursor{display:inline-block;width:2px;height:.9em;background:var(--accent);vertical-align:-.08em;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.screen-meta{display:flex;justify-content:space-between;margin-top:14px;color:var(--dim);font-size:9px;text-transform:uppercase;letter-spacing:.08em}
+.decode{padding:10px 12px;border-top:1px dashed var(--line);background:#080a0c}
+.decode-label{font-size:8px;color:var(--accent2);letter-spacing:.13em;text-transform:uppercase;margin-bottom:6px}
+#latinOut{font-size:13px;line-height:1.45;color:#d5d8d6;white-space:pre-wrap;word-break:break-word;min-height:19px}
+.toolbar{display:flex;gap:6px;padding:8px;border-top:1px solid var(--line2);background:#07090b;flex-wrap:wrap}
+.smallbtn{border:1px solid var(--line);background:#0b0e11;padding:8px 9px;font-size:9px;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;flex:1;min-width:90px}
+.smallbtn:active,.key:active{transform:translateY(1px);background:#15191e}
+.smallbtn.accent{border-color:rgba(230,44,120,.6);color:var(--accent2)}
+.keyboard{padding:10px;background:#080a0c}
+.keys{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.key{min-height:54px;border:1px solid #30353b;border-radius:3px;background:linear-gradient(180deg,#15191e,#0c0f12);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.035);user-select:none}
+.key .g{font-family:"Teyvat Script",serif;font-size:26px;line-height:1;color:#f1f1ee}
+.key .l{font-size:8px;color:var(--muted);margin-top:5px;letter-spacing:.08em;transition:.2s}
+.hide-hints .key .l{opacity:0;height:0;margin:0;overflow:hidden}
+.funrow{display:grid;grid-template-columns:1.2fr 2fr 1.2fr;gap:7px;margin-top:7px}
+.fkey{min-height:48px;border:1px solid var(--line);background:#0d1013;font-size:10px;color:#cfd2d0;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:8px;position:relative}
+.fkey svg{width:25px;height:25px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.fkey.space-key svg{width:34px}
+.fkey.hot{border-color:rgba(230,44,120,.6);color:var(--accent2)}
+.fkey:active{transform:translateY(1px);background:#15191e}
+.fkey[title]:after{content:"";position:absolute;inset:auto 7px 5px;height:1px;background:currentColor;opacity:.08}
+.translation{display:none}
+.translation.active{display:block}
+.translate-grid{padding:10px;display:grid;gap:9px}
+.field{border:1px solid var(--line);background:#080a0c;padding:9px}
+.field label{display:flex;justify-content:space-between;color:var(--muted);font-size:8px;letter-spacing:.11em;text-transform:uppercase;margin-bottom:6px}
+.field textarea{width:100%;min-height:76px;border:0;outline:none;background:transparent;color:#e4e6e3;resize:vertical;font-size:13px;line-height:1.45}
+.note{font-size:9px;color:var(--dim);line-height:1.5;padding:0 10px 10px}
+.note b{color:var(--warn);font-weight:600}
+.log{max-height:175px;overflow:auto;padding:8px 10px}
+.log-empty{color:var(--dim);font-size:10px;padding:12px 2px}
+.entry{border-left:2px solid var(--line);padding:7px 8px;margin:5px 0;background:#080a0c}
+.entry.you{border-color:var(--accent)}
+.entry.other{border-color:var(--warn)}
+.entry.other .who{color:var(--warn)}
+.entry .who{font-size:8px;color:var(--accent2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px}
+.entry .glyph{font-family:"Teyvat Script",serif;font-size:21px;line-height:1.35;word-break:break-word}
+.entry .plain{font-size:10px;color:var(--muted);line-height:1.4;margin-top:4px;word-break:break-word}
+.statusbar{padding:10px 12px 18px;color:var(--dim);font-size:8px;letter-spacing:.1em;text-transform:uppercase;display:flex;justify-content:space-between;gap:8px}
+.hidden{display:none!important}
+.doc-editor{padding:10px;background:#080a0c}
+.doc-field{width:100%;min-height:360px;border:1px solid var(--line);outline:none;background:#050708;color:#f1f1ee;padding:14px;resize:vertical;font-family:"Teyvat Script",serif;font-size:28px;line-height:1.55;letter-spacing:.025em}
+.doc-meta{display:flex;justify-content:space-between;gap:8px;margin-top:8px;color:var(--dim);font-size:8px;letter-spacing:.1em;text-transform:uppercase}
+.doc-latin{margin-top:10px;border:1px dashed var(--line);background:#07090b;padding:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;font-size:11px;line-height:1.5;color:var(--muted);white-space:pre-wrap;word-break:break-word;max-height:190px;overflow:auto}
+.keyrow{display:grid;gap:6px}
+.keys{display:flex!important;flex-direction:column;gap:6px}
+.keyrow.qwerty-row{grid-template-columns:repeat(var(--cols),1fr)}
+.keyrow.alpha-row{grid-template-columns:repeat(5,1fr)}
+.keyrow.alpha-row:last-child{grid-template-columns:repeat(6,1fr)}
+.keyrow.qwerty-row:nth-child(2){padding-inline:4%}
+.keyrow.qwerty-row:nth-child(3){padding-inline:9%}
+@media (max-width:380px){.key{min-height:46px}.key .g{font-size:21px}.key .l{font-size:7px}.tab{font-size:8px;padding:9px 3px}}
+.table-overlay{position:fixed;inset:0;background:#040506;z-index:30;display:none;flex-direction:column}
+.table-overlay.active{display:flex}
+.table-half{flex:1;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow:auto}
+.table-half.top{transform:rotate(180deg)}
+.table-card{width:min(92vw,520px);text-align:center}
+.table-glyph{font-family:"Teyvat Script",serif;font-size:clamp(34px,11vw,62px);line-height:1.4;word-break:break-word}
+.table-plain{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.5}
+.table-close{position:absolute;right:12px;top:12px;border:1px solid var(--accent);background:#0b0d10;color:var(--accent2);padding:8px 10px;z-index:2}
+@media (min-width:600px){body{padding:18px 0}.app{border:1px solid #22272c;min-height:calc(100vh - 36px)}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="header">
+    <div class="kicker"><span class="pulse"></span> connection: local / internet: not required</div>
+    <h1>Teyvat Script Terminal</h1>
+    <div class="sub"><span class="badge hot">mobile draft 0.3</span><span class="badge">A–Z sequence</span><span>Yugor Lab</span></div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="write">01 / WRITE</button>
+    <button class="tab" data-tab="decode">02 / DECODE</button>
+    <button class="tab" data-tab="translate">03 / TRANSLATE</button>
+    <button class="tab" data-tab="document">04 / DOCUMENT</button>
+  </nav>
+
+  <main class="main">
+    <section class="panel" id="writePanel">
+      <div class="panel-head"><strong>TEYVAT INPUT</strong><span id="counter">0 chars</span></div>
+      <div class="screen" id="screen" tabindex="0" aria-label="Teyvat text input">
+        <div class="teyvat"><span id="teyvatOut"></span><span class="cursor"></span></div>
+        <div class="screen-meta"><span>script layer: reconstructed</span><span>latin-backed</span></div>
+      </div>
+      <div class="decode" id="decodeBox">
+        <div class="decode-label">LATIN DECODE</div>
+        <div id="latinOut">—</div>
+      </div>
+      <div class="toolbar">
+        <button class="smallbtn" id="speakerBtn">speaker: YOU</button>
+        <button class="smallbtn" id="tableBtn">table mode</button>
+        <button class="smallbtn accent" id="sendBtn">save phrase</button>
+      </div>
+    </section>
+
+    <section class="panel" id="keyboardPanel">
+      <div class="panel-head"><strong>ALPHABETIC KEYBOARD</strong><span id="layoutLabel">QWERTY</span></div>
+      <div class="toolbar" style="border-top:0;border-bottom:1px solid var(--line2)">
+        <button class="smallbtn" id="hintBtn">A–Z hints: on</button>
+        <button class="smallbtn" id="layoutBtn">layout: QWERTY</button>
+      </div>
+      <div class="keyboard" id="keyboard"><div class="keys" id="keys"></div>
+        <div class="funrow">
+          <button class="fkey" data-action="back" aria-label="Backspace" title="Backspace">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M12 8h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H12L4 16l8-8Z"/><path d="m17 12 7 8m0-8-7 8"/></svg>
+          </button>
+          <button class="fkey space-key" data-action="space" aria-label="Space" title="Space">
+            <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M5 7v9h30V7"/></svg>
+          </button>
+          <button class="fkey hot" data-action="clear" aria-label="Clear text" title="Clear text">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 10h12l-1 16H11L10 10Z"/><path d="M8 10h16M13 10V7h6v3M14 14v8M18 14v8"/></svg>
+          </button>
+        </div>
+        <div class="funrow" style="grid-template-columns:1fr 1fr">
+          <button class="fkey" data-action="newline" aria-label="New line" title="New line">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M25 7v11a5 5 0 0 1-5 5H8"/><path d="m13 18-5 5 5 5"/></svg>
+          </button>
+          <button class="fkey" id="copyBtn" aria-label="Copy Latin text" title="Copy Latin text">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="11" y="11" width="14" height="14" rx="1"/><path d="M21 11V7H7v14h4"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel translation" id="translationPanel">
+      <div class="panel-head"><strong>TRANSLATION PROTOTYPE</strong><span>RU / EN / TEYVAT</span></div>
+      <div class="translate-grid">
+        <div class="field"><label><span>Русский</span><span>manual / demo</span></label><textarea id="ruField" placeholder="Например: Здравствуйте. Вы меня понимаете?"></textarea></div>
+        <div class="field"><label><span>English</span><span>script source</span></label><textarea id="enField" placeholder="Hello. Do you understand me?"></textarea></div>
+        <button class="smallbtn accent" id="toScriptBtn">ENGLISH → TEYVAT SCREEN</button>
+      </div>
+      <div class="note"><b>V0.1:</b> тейватский слой работает полностью офлайн, потому что это отображение латинских букв нашим шрифтом. Полноценный RU ↔ EN перевод пока не встроен; поля оставлены для теста интерфейса и будущего переводчика.</div>
+    </section>
+
+
+    <section class="panel hidden" id="documentPanel">
+      <div class="panel-head"><strong>DOCUMENT MODE</strong><span id="docCounter">0 chars</span></div>
+      <div class="doc-editor">
+        <textarea id="docField" class="doc-field" spellcheck="false" autocomplete="off" autocapitalize="characters" placeholder="Long Teyvat text..."></textarea>
+        <div class="doc-meta"><span>long-form / local autosave</span><span>letters + spaces + line breaks</span></div>
+        <div class="toolbar" style="padding-inline:0;border-top:0;background:transparent">
+          <button class="smallbtn" id="docLatinBtn">latin view: off</button>
+          <button class="smallbtn" id="docCopyBtn">copy latin</button>
+          <button class="smallbtn accent" id="docClearBtn">clear document</button>
+        </div>
+        <div class="doc-latin hidden" id="docLatin"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="logPanel">
+      <div class="panel-head"><strong>CONVERSATION LOG</strong><button class="smallbtn" id="clearLog" style="flex:0;padding:5px 7px;min-width:auto">CLEAR</button></div>
+      <div class="log" id="log"><div class="log-empty">No saved phrases yet. Use “SAVE PHRASE”.</div></div>
+    </section>
+
+    <div class="statusbar"><span>system ready / local storage on</span><span id="saveState">idle</span></div>
+  </main>
+</div>
+
+<div class="table-overlay" id="tableOverlay">
+  <button class="table-close" id="tableClose">CLOSE ×</button>
+  <div class="table-half top"><div class="table-card"><div class="table-glyph" id="topGlyph">—</div><div class="table-plain" id="topPlain">Waiting for text</div></div></div>
+  <div class="table-half"><div class="table-card"><div class="table-glyph" id="bottomGlyph">—</div><div class="table-plain" id="bottomPlain">Waiting for text</div></div></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const state={text:'',hints:true,tab:'write',layout:'qwerty',speaker:'you',docText:localStorage.getItem('teyvat-terminal-document')||''};
+const layouts={
+  qwerty:['QWERTYUIOP','ASDFGHJKL','ZXCVBNM'],
+  alpha:['ABCDE','FGHIJ','KLMNO','PQRST','UVWXYZ']
+};
+const keys=$('#keys');
+let docCaret=state.docText.length;
+
+function cleanText(v,limit=700){return v.toUpperCase().replace(/[^A-Z\n ]/g,'').slice(0,limit)}
+function renderKeyboard(){
+  keys.innerHTML='';
+  layouts[state.layout].forEach(row=>{
+    const wrap=document.createElement('div');
+    wrap.className=`keyrow ${state.layout==='qwerty'?'qwerty-row':'alpha-row'}`;
+    wrap.style.setProperty('--cols',row.length);
+    [...row].forEach(ch=>{
+      const b=document.createElement('button');
+      b.className='key';b.dataset.char=ch;
+      b.innerHTML=`<span class="g">${ch}</span><span class="l">${ch}</span>`;
+      wrap.appendChild(b);
+    });
+    keys.appendChild(wrap);
+  });
+  $('#keyboard').classList.toggle('hide-hints',!state.hints);
+}
+function render(){
+  $('#teyvatOut').textContent=state.text;
+  $('#latinOut').textContent=state.text||'—';
+  $('#counter').textContent=`${state.text.length} chars`;
+  const fallback=state.text||'—';
+  $('#topGlyph').textContent=fallback;$('#bottomGlyph').textContent=fallback;
+  $('#topPlain').textContent=state.text||'Waiting for text';$('#bottomPlain').textContent=state.text||'Waiting for text';
+}
+function renderDoc(){
+  const f=$('#docField');
+  if(f.value!==state.docText)f.value=state.docText;
+  $('#docCounter').textContent=`${state.docText.length} chars`;
+  $('#docLatin').textContent=state.docText||'—';
+  localStorage.setItem('teyvat-terminal-document',state.docText);
+}
+function activeTarget(){return state.tab==='document'?'document':'short'}
+function inputChar(ch){
+  if(activeTarget()==='document'){
+    const pos=Math.max(0,Math.min(docCaret,state.docText.length));
+    state.docText=(state.docText.slice(0,pos)+ch+state.docText.slice(pos)).slice(0,12000);
+    docCaret=Math.min(pos+ch.length,state.docText.length);renderDoc();
+  }else{state.text=(state.text+ch).slice(0,700);render()}
+}
+function backspace(){
+  if(activeTarget()==='document'){
+    const pos=Math.max(0,Math.min(docCaret,state.docText.length));
+    if(pos>0){state.docText=state.docText.slice(0,pos-1)+state.docText.slice(pos);docCaret=pos-1;renderDoc()}
+  }else{state.text=state.text.slice(0,-1);render()}
+}
+function clearActive(){
+  if(activeTarget()==='document'){state.docText='';renderDoc()}
+  else{state.text='';render()}
+}
+function flash(msg){$('#saveState').textContent=msg;setTimeout(()=>$('#saveState').textContent='idle',1200)}
+
+const clearStates=new WeakMap();
+function protectedClear(button,action,label='clear'){
+  const prev=clearStates.get(button);
+  if(!prev?.armed){
+    const old=button.textContent;button.textContent='tap again to confirm';flash(`${label} armed`);
+    const timer=setTimeout(()=>{clearStates.set(button,{armed:false});button.textContent=old},2200);
+    clearStates.set(button,{armed:true,timer,old});
+    return;
+  }
+  clearTimeout(prev.timer);clearStates.set(button,{armed:false});action();button.textContent=prev.old||label;flash('cleared');
+}
+
+$('#keyboard').addEventListener('click',e=>{
+  const k=e.target.closest('.key,[data-action]');if(!k)return;
+  if(k.dataset.char)inputChar(k.dataset.char);
+  const a=k.dataset.action;
+  if(a==='back')backspace();
+  if(a==='space')inputChar(' ');
+  if(a==='newline')inputChar('\n');
+  if(a==='clear')protectedClear(k,clearActive,'clear');
+});
+
+document.addEventListener('keydown',e=>{
+  if(['TEXTAREA','INPUT','SELECT'].includes(document.activeElement.tagName))return;
+  if(/^[a-zA-Z]$/.test(e.key)){inputChar(e.key.toUpperCase());e.preventDefault()}
+  else if(e.key==='Backspace'){backspace();e.preventDefault()}
+  else if(e.key===' '){inputChar(' ');e.preventDefault()}
+  else if(e.key==='Enter'){inputChar('\n');e.preventDefault()}
+});
+
+$('#hintBtn').onclick=()=>{state.hints=!state.hints;$('#keyboard').classList.toggle('hide-hints',!state.hints);$('#hintBtn').textContent=`A–Z hints: ${state.hints?'on':'off'}`};
+$('#layoutBtn').onclick=()=>{state.layout=state.layout==='qwerty'?'alpha':'qwerty';renderKeyboard();const label=state.layout==='qwerty'?'QWERTY':'A–Z';$('#layoutBtn').textContent=`layout: ${label}`;$('#layoutLabel').textContent=label;flash('layout changed')};
+$('#speakerBtn').onclick=()=>{state.speaker=state.speaker==='you'?'other':'you';$('#speakerBtn').textContent=`speaker: ${state.speaker.toUpperCase()}`;flash(`speaker ${state.speaker}`)};
+async function copyTextCompat(text,success='copied'){
+  try{
+    if(window.AndroidBridge && typeof window.AndroidBridge.copyText==='function'){
+      window.AndroidBridge.copyText(text);flash(success);return;
+    }
+    if(navigator.clipboard && window.isSecureContext){await navigator.clipboard.writeText(text);flash(success);return;}
+    const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();
+    const ok=document.execCommand('copy');ta.remove();flash(ok?success:'copy blocked');
+  }catch{flash('copy blocked')}
+}
+$('#copyBtn').onclick=()=>copyTextCompat(state.text,'copied');
+$('#tableBtn').onclick=()=>$('#tableOverlay').classList.add('active');
+$('#tableClose').onclick=()=>$('#tableOverlay').classList.remove('active');
+
+$$('.tab').forEach(b=>b.onclick=()=>{
+  $$('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.tab=b.dataset.tab;
+  const tr=state.tab==='translate',doc=state.tab==='document';
+  $('#translationPanel').classList.toggle('active',tr);
+  $('#documentPanel').classList.toggle('hidden',!doc);
+  $('#writePanel').classList.toggle('hidden',doc||tr);
+  $('#keyboardPanel').classList.toggle('hidden',tr);
+  $('#decodeBox').classList.toggle('hidden',state.tab==='write');
+  if(state.tab==='decode'){$('#writePanel').classList.remove('hidden');$('#screen').scrollIntoView({behavior:'smooth',block:'start'})}
+  if(doc){renderDoc();setTimeout(()=>$('#documentPanel').scrollIntoView({behavior:'smooth',block:'start'}),0)}
+});
+
+$('#toScriptBtn').onclick=()=>{state.text=cleanText($('#enField').value,700);render();window.scrollTo({top:0,behavior:'smooth'});flash('screen updated')};
+
+$('#docField').addEventListener('input',e=>{
+  const start=e.target.selectionStart;
+  state.docText=cleanText(e.target.value,12000);docCaret=Math.min(start,state.docText.length);
+  renderDoc();e.target.setSelectionRange(docCaret,docCaret);
+});
+['click','keyup','select','focus'].forEach(evt=>$('#docField').addEventListener(evt,e=>{docCaret=e.target.selectionStart??state.docText.length}));
+$('#docLatinBtn').onclick=()=>{const box=$('#docLatin');const now=box.classList.toggle('hidden');$('#docLatinBtn').textContent=`latin view: ${now?'off':'on'}`};
+$('#docCopyBtn').onclick=()=>copyTextCompat(state.docText,'document copied');
+$('#docClearBtn').onclick=e=>protectedClear(e.currentTarget,()=>{state.docText='';renderDoc()},'clear document');
+
+function loadLog(){try{return JSON.parse(localStorage.getItem('teyvat-terminal-log')||'[]')}catch{return[]}}
+function saveLog(arr){localStorage.setItem('teyvat-terminal-log',JSON.stringify(arr.slice(-30)))}
+function renderLog(){
+  const arr=loadLog(),box=$('#log');box.innerHTML='';
+  if(!arr.length){box.innerHTML='<div class="log-empty">No saved phrases yet. Use “SAVE PHRASE”.</div>';return}
+  arr.slice().reverse().forEach(x=>{
+    const who=x.speaker||'you';
+    const d=document.createElement('div');d.className=`entry ${who}`;
+    d.innerHTML=`<div class="who">${who.toUpperCase()} / ${x.time}</div><div class="glyph"></div><div class="plain"></div>`;
+    d.querySelector('.glyph').textContent=x.text;d.querySelector('.plain').textContent=x.text;box.appendChild(d);
+  })
+}
+$('#sendBtn').onclick=()=>{
+  if(!state.text.trim())return flash('nothing to save');
+  const arr=loadLog();arr.push({text:state.text,speaker:state.speaker,time:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})});saveLog(arr);renderLog();flash('saved')
+};
+$('#clearLog').onclick=e=>protectedClear(e.currentTarget,()=>{localStorage.removeItem('teyvat-terminal-log');renderLog()},'clear log');
+
+$('#enField').addEventListener('input',()=>{if(!state.text)$('#saveState').textContent='english ready'});
+renderKeyboard();render();renderDoc();renderLog();
+</script>
+</body>
+</html>
