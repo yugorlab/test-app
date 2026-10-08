@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,11 +24,20 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build debug APK
-        run: gradle assembleDebug
+      - name: Restore signing key
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > "$RUNNER_TEMP/teyvat-terminal-release.jks"
+
+      - name: Build signed release APK
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/teyvat-terminal-release.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: gradle assembleRelease
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: teyvat-terminal-v0.3-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: teyvat-terminal-release
+          path: app/build/outputs/apk/release/app-release.apk
