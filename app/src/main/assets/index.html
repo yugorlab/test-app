@@ -283,6 +283,7 @@ const clearStates = new WeakMap();
 function protectedClear(button, action, label = 'clear') {
   const prev = clearStates.get(button);
   if (!prev?.armed) {
+    button.classList.add('confirming');
     flash(`tap again to confirm ${label}`);
     const timer = setTimeout(() => {
       clearStates.set(button, { armed: false });
