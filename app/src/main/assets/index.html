@@ -121,11 +121,10 @@ h1{font-size:20px;line-height:1.05;letter-spacing:.12em;margin:8px 0 5px;font-we
   </header>
 
   <nav class="tabs">
-    <button class="tab active" data-tab="write">01 / WRITE</button>
-    <button class="tab" data-tab="decode">02 / DECODE</button>
-    <button class="tab" data-tab="translate">03 / TRANSLATE</button>
-    <button class="tab" data-tab="document">04 / DOCUMENT</button>
-  </nav>
+  <button class="tab active" data-tab="terminal">01 / TERMINAL</button>
+  <button class="tab" data-tab="translate">02 / TRANSLATE</button>
+  <button class="tab" data-tab="document">03 / DOCUMENT</button>
+</nav>
 
   <main class="main">
     <section class="panel" id="writePanel">
@@ -217,7 +216,7 @@ h1{font-size:20px;line-height:1.05;letter-spacing:.12em;margin:8px 0 5px;font-we
 <script>
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
-const state={text:'',hints:true,tab:'write',layout:'qwerty',speaker:'you',docText:localStorage.getItem('teyvat-terminal-document')||''};
+const state={text:'',hints:true,tab:'terminal',layout:'qwerty',speaker:'you',docText:localStorage.getItem('teyvat-terminal-document')||''};
 const layouts={
   qwerty:['QWERTYUIOP','ASDFGHJKL','ZXCVBNM'],
   alpha:['ABCDE','FGHIJ','KLMNO','PQRST','UVWXYZ']
@@ -338,15 +337,25 @@ $('#tableBtn').onclick=()=>$('#tableOverlay').classList.add('active');
 $('#tableClose').onclick=()=>$('#tableOverlay').classList.remove('active');
 
 $$('.tab').forEach(b=>b.onclick=()=>{
-  $$('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.tab=b.dataset.tab;
-  const tr=state.tab==='translate',doc=state.tab==='document';
+  $$('.tab').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  state.tab=b.dataset.tab;
+  const tr=state.tab==='translate';
+  const doc=state.tab==='document';
+  const terminal=state.tab==='terminal';
   $('#translationPanel').classList.toggle('active',tr);
   $('#documentPanel').classList.toggle('hidden',!doc);
-  $('#writePanel').classList.toggle('hidden',doc||tr);
+  $('#writePanel').classList.toggle('hidden',!terminal);
   $('#keyboardPanel').classList.toggle('hidden',tr);
-  $('#decodeBox').classList.toggle('hidden',state.tab==='write');
-  if(state.tab==='decode'){$('#writePanel').classList.remove('hidden');$('#screen').scrollIntoView({behavior:'smooth',block:'start'})}
-  if(doc){renderDoc();setTimeout(()=>$('#documentPanel').scrollIntoView({behavior:'smooth',block:'start'}),0)}
+  if(doc){
+    renderDoc();
+    setTimeout(()=>{
+      $('#documentPanel').scrollIntoView({
+        behavior:'smooth',
+        block:'start'
+      });
+    },0);
+  }
 });
 
 $('#toScriptBtn').onclick=()=>{state.text=cleanText($('#enField').value,700);render();window.scrollTo({top:0,behavior:'smooth'});flash('screen updated')};
