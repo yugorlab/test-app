@@ -276,7 +276,6 @@ function clearActive(){
 }
 function flash(msg){$('#saveState').textContent=msg;setTimeout(()=>$('#saveState').textContent='idle',1200)}
 
-const clearStates=new WeakMap();
 const clearStates = new WeakMap();
 
 function protectedClear(button, action, label = 'clear') {
