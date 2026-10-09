@@ -278,15 +278,28 @@ function clearActive(){
 function flash(msg){$('#saveState').textContent=msg;setTimeout(()=>$('#saveState').textContent='idle',1200)}
 
 const clearStates=new WeakMap();
-function protectedClear(button,action,label='clear'){
-  const prev=clearStates.get(button);
-  if(!prev?.armed){
-    const old=button.textContent;button.textContent='tap again to confirm';flash(`${label} armed`);
-    const timer=setTimeout(()=>{clearStates.set(button,{armed:false});button.textContent=old},2200);
-    clearStates.set(button,{armed:true,timer,old});
+const clearStates = new WeakMap();
+
+function protectedClear(button, action, label = 'clear') {
+  const prev = clearStates.get(button);
+  if (!prev?.armed) {
+    flash(`tap again to confirm ${label}`);
+    const timer = setTimeout(() => {
+      clearStates.set(button, { armed: false });
+    }, 2200);
+    clearStates.set(button, {
+      armed: true,
+      timer
+    });
+
     return;
   }
-  clearTimeout(prev.timer);clearStates.set(button,{armed:false});action();button.textContent=prev.old||label;flash('cleared');
+
+  clearTimeout(prev.timer);
+  clearStates.set(button, { armed: false });
+
+  action();
+  flash('cleared');
 }
 
 $('#keyboard').addEventListener('click',e=>{
