@@ -541,36 +541,6 @@ $('#translateBtn').onclick = () => {
   AndroidBridge.translateTest(text);
 };
 
-    const data=await response.json();
-
-    if(!response.ok){
-      throw new Error(data.error||'translation failed');
-    }
-
-    translateResult.value=data.translatedText||'';
-
-    updateTranslationCounters();
-
-    $('#translationStatus').textContent='ONLINE / READY';
-    $('#engineState').textContent=
-      (data.engine||'netlify').toUpperCase();
-
-    flash('translation complete');
-
-  }catch(error){
-    console.error(error);
-
-    translateResult.value='';
-
-    updateTranslationCounters();
-
-    $('#translationStatus').textContent='CONNECTION ERROR';
-    $('#engineState').textContent='UNAVAILABLE';
-
-    flash('translation failed');
-  }
-};
-
 $('#copyTranslationBtn').onclick=()=>{
   if(!translateResult.value.trim()){
     flash('nothing to copy');
