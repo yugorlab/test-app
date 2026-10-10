@@ -16,6 +16,8 @@ import com.google.mlkit.nl.translate.TranslateLanguage;
 import com.google.mlkit.nl.translate.Translation;
 import com.google.mlkit.nl.translate.Translator;
 import com.google.mlkit.nl.translate.TranslatorOptions;
+import com.google.mlkit.nl.languageid.LanguageIdentification;
+import com.google.mlkit.nl.languageid.LanguageIdentifier;
 
 import org.json.JSONObject;
 
@@ -87,45 +89,105 @@ public class MainActivity extends Activity {
     }
 
     @JavascriptInterface
-    public void translateTest(String text) {
-        if (text == null || text.trim().isEmpty()) {
-            sendError("No text provided");
-            return;
-        }
-
-        TranslatorOptions options =
-            new TranslatorOptions.Builder()
-                .setSourceLanguage(TranslateLanguage.RUSSIAN)
-                .setTargetLanguage(TranslateLanguage.ENGLISH)
-                .build();
-
-        Translator translator =
-            Translation.getClient(options);
-
-        DownloadConditions conditions =
-            new DownloadConditions.Builder()
-                .build();
-
-        translator
-            .downloadModelIfNeeded(conditions)
-            .addOnSuccessListener(unused -> {
-                translator
-                    .translate(text)
-                    .addOnSuccessListener(result -> {
-                        sendResult(result);
-                        translator.close();
-                    })
-                    .addOnFailureListener(error -> {
-                        sendError(error.getMessage());
-                        translator.close();
-                    });
-            })
-            .addOnFailureListener(error -> {
-                sendError(error.getMessage());
-                translator.close();
-            });
+public void translate(String text, String source, String target) {
+    if (text == null || text.trim().isEmpty()) {
+        sendError("No text provided");
+        return;
     }
 
+    if (target == null || target.trim().isEmpty()) {
+        sendError("Target language is missing");
+        return;
+    }
+
+    if ("auto".equals(source)) {
+        detectAndTranslate(text, target);
+    } else {
+        startTranslation(text, source, target);
+    }
+}
+
+    private void detectAndTranslate(String text, String target) {
+    LanguageIdentifier languageIdentifier =
+        LanguageIdentification.getClient();
+
+    languageIdentifier
+        .identifyLanguage(text)
+        .addOnSuccessListener(languageCode -> {
+            languageIdentifier.close();
+
+            if ("und".equals(languageCode)) {
+                sendError("Language could not be detected");
+                return;
+            }
+
+            startTranslation(text, languageCode, target);
+        })
+        .addOnFailureListener(error -> {
+            languageIdentifier.close();
+            sendError(error.getMessage());
+        });
+    }
+
+        private void startTranslation(
+    String text,
+    String source,
+    String target
+) {
+    String sourceLanguage =
+        TranslateLanguage.fromLanguageTag(source);
+
+    String targetLanguage =
+        TranslateLanguage.fromLanguageTag(target);
+
+    if (sourceLanguage == null) {
+        sendError("Unsupported source language: " + source);
+        return;
+    }
+
+    if (targetLanguage == null) {
+        sendError("Unsupported target language: " + target);
+        return;
+    }
+
+    if (sourceLanguage.equals(targetLanguage)) {
+        sendResult(text);
+        return;
+    }
+
+    TranslatorOptions options =
+        new TranslatorOptions.Builder()
+            .setSourceLanguage(sourceLanguage)
+            .setTargetLanguage(targetLanguage)
+            .build();
+
+    Translator translator =
+        Translation.getClient(options);
+
+    DownloadConditions conditions =
+        new DownloadConditions.Builder()
+            .build();
+
+    translator
+        .downloadModelIfNeeded(conditions)
+        .addOnSuccessListener(unused -> {
+            translator
+                .translate(text)
+                .addOnSuccessListener(result -> {
+                    sendResult(result);
+                    translator.close();
+                })
+                .addOnFailureListener(error -> {
+                    sendError(error.getMessage());
+                    translator.close();
+                });
+        })
+        .addOnFailureListener(error -> {
+            sendError(error.getMessage());
+            translator.close();
+        });
+        }
+        
     private void sendResult(String result) {
         String safeResult =
             JSONObject.quote(result == null ? "" : result);
