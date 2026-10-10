@@ -135,7 +135,7 @@ h1{font-size:20px;line-height:1.05;letter-spacing:.12em;margin:8px 0 5px;font-we
 <body>
 <div class="app" id="app">
   <header class="header">
-    <div class="kicker"><span class="pulse"></span> connection: local / internet: not required</div>
+    <div class="kicker"><span class="pulse"></span> connection: local / internet: optional</div>
     <h1>Teyvat Script Terminal</h1>
     <div class="sub"><span class="badge hot">mobile draft 0.4</span><span class="badge">A–Z sequence</span><span>Yugor Lab</span></div>
   </header>
@@ -197,7 +197,7 @@ h1{font-size:20px;line-height:1.05;letter-spacing:.12em;margin:8px 0 5px;font-we
     <section class="panel translation" id="translationPanel">
   <div class="panel-head">
     <strong>TRANSLATION</strong>
-    <span id="translationStatus">DEMO / OFFLINE</span>
+    <span id="translationStatus">LOCAL / READY</span>
   </div>
 
   <div class="translate-grid">
@@ -283,7 +283,7 @@ h1{font-size:20px;line-height:1.05;letter-spacing:.12em;margin:8px 0 5px;font-we
     <div class="translation-engine">
       <span class="pulse"></span>
       <span>TRANSLATION ENGINE:</span>
-      <strong id="engineState">DEMO / NOT CONNECTED</strong>
+      <strong id="engineState">ML KIT / ON-DEVICE</strong>
     </div>
 
   </div>
@@ -535,7 +535,7 @@ $('#translateBtn').onclick = () => {
     return;
   }
 
-  $('#translationStatus').textContent = 'MODEL / CHECKING';
+  $('#translationStatus').textContent = 'DOWNLOADING MODEL...';
   $('#engineState').textContent = 'ML KIT / PREPARING';
 
   AndroidBridge.translate(text,sourceLang.value,targetLang.value);
