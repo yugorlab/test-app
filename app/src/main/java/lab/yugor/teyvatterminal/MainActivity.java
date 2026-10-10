@@ -5,19 +5,19 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.view.WindowManager;
 
 import com.google.mlkit.common.model.DownloadConditions;
+import com.google.mlkit.nl.languageid.LanguageIdentification;
+import com.google.mlkit.nl.languageid.LanguageIdentifier;
 import com.google.mlkit.nl.translate.TranslateLanguage;
 import com.google.mlkit.nl.translate.Translation;
 import com.google.mlkit.nl.translate.Translator;
 import com.google.mlkit.nl.translate.TranslatorOptions;
-import com.google.mlkit.nl.languageid.LanguageIdentification;
-import com.google.mlkit.nl.languageid.LanguageIdentifier;
 
 import org.json.JSONObject;
 
@@ -44,7 +44,10 @@ public class MainActivity extends Activity {
         settings.setTextZoom(100);
 
         webView.setWebViewClient(new WebViewClient());
-        webView.addJavascriptInterface(new AndroidBridge(this, webView),"AndroidBridge");
+        webView.addJavascriptInterface(
+            new AndroidBridge(this, webView),
+            "AndroidBridge"
+        );
         webView.loadUrl("file:///android_asset/index.html");
     }
 
@@ -58,166 +61,186 @@ public class MainActivity extends Activity {
     }
 
     public static class AndroidBridge {
-    private final Activity activity;
-    private final WebView webView;
+        private final Activity activity;
+        private final WebView webView;
 
-    AndroidBridge(Activity activity, WebView webView) {
-        this.activity = activity;
-        this.webView = webView;
-    }
+        AndroidBridge(Activity activity, WebView webView) {
+            this.activity = activity;
+            this.webView = webView;
+        }
 
-    @JavascriptInterface
-    public void copyText(String text) {
-        ClipboardManager clipboard =
-            (ClipboardManager) activity.getSystemService(
-                Context.CLIPBOARD_SERVICE
+        @JavascriptInterface
+        public void copyText(String text) {
+            ClipboardManager clipboard =
+                (ClipboardManager) activity.getSystemService(
+                    Context.CLIPBOARD_SERVICE
+                );
+
+            if (clipboard != null) {
+                clipboard.setPrimaryClip(
+                    ClipData.newPlainText(
+                        "Teyvat Terminal",
+                        text == null ? "" : text
+                    )
+                );
+            }
+        }
+
+        @JavascriptInterface
+        public String mlKitStatus() {
+            return "ML Kit bridge ready";
+        }
+
+        @JavascriptInterface
+        public void translate(
+            String text,
+            String source,
+            String target,
+            int requestId
+        ) {
+            if (text == null || text.trim().isEmpty()) {
+                sendError("No text provided", requestId);
+                return;
+            }
+
+            if (target == null || target.trim().isEmpty()) {
+                sendError("Target language is missing", requestId);
+                return;
+            }
+
+            if ("auto".equals(source)) {
+                detectAndTranslate(text, target, requestId);
+            } else {
+                startTranslation(text, source, target, requestId);
+            }
+        }
+
+        private void detectAndTranslate(
+            String text,
+            String target,
+            int requestId
+        ) {
+            LanguageIdentifier languageIdentifier =
+                LanguageIdentification.getClient();
+
+            languageIdentifier
+                .identifyLanguage(text)
+                .addOnSuccessListener(languageCode -> {
+                    languageIdentifier.close();
+
+                    if ("und".equals(languageCode)) {
+                        sendError(
+                            "Language could not be detected",
+                            requestId
+                        );
+                        return;
+                    }
+
+                    startTranslation(
+                        text,
+                        languageCode,
+                        target,
+                        requestId
+                    );
+                })
+                .addOnFailureListener(error -> {
+                    languageIdentifier.close();
+                    sendError(error.getMessage(), requestId);
+                });
+        }
+
+        private void startTranslation(
+            String text,
+            String source,
+            String target,
+            int requestId
+        ) {
+            String sourceLanguage =
+                TranslateLanguage.fromLanguageTag(source);
+
+            String targetLanguage =
+                TranslateLanguage.fromLanguageTag(target);
+
+            if (sourceLanguage == null) {
+                sendError(
+                    "Unsupported source language: " + source,
+                    requestId
+                );
+                return;
+            }
+
+            if (targetLanguage == null) {
+                sendError(
+                    "Unsupported target language: " + target,
+                    requestId
+                );
+                return;
+            }
+
+            if (sourceLanguage.equals(targetLanguage)) {
+                sendResult(text, requestId);
+                return;
+            }
+
+            TranslatorOptions options =
+                new TranslatorOptions.Builder()
+                    .setSourceLanguage(sourceLanguage)
+                    .setTargetLanguage(targetLanguage)
+                    .build();
+
+            Translator translator = Translation.getClient(options);
+
+            DownloadConditions conditions =
+                new DownloadConditions.Builder().build();
+
+            translator
+                .downloadModelIfNeeded(conditions)
+                .addOnSuccessListener(unused ->
+                    translator
+                        .translate(text)
+                        .addOnSuccessListener(result -> {
+                            sendResult(result, requestId);
+                            translator.close();
+                        })
+                        .addOnFailureListener(error -> {
+                            sendError(error.getMessage(), requestId);
+                            translator.close();
+                        })
+                )
+                .addOnFailureListener(error -> {
+                    sendError(error.getMessage(), requestId);
+                    translator.close();
+                });
+        }
+
+        private void sendResult(String result, int requestId) {
+            String safeResult =
+                JSONObject.quote(result == null ? "" : result);
+
+            activity.runOnUiThread(() ->
+                webView.evaluateJavascript(
+                    "window.onMlKitTranslationResult(" +
+                    safeResult + "," + requestId + ");",
+                    null
+                )
             );
+        }
 
-        if (clipboard != null) {
-            clipboard.setPrimaryClip(
-                ClipData.newPlainText(
-                    "Teyvat Terminal",
-                    text == null ? "" : text
+        private void sendError(String message, int requestId) {
+            String safeMessage =
+                JSONObject.quote(
+                    message == null
+                        ? "Unknown ML Kit error"
+                        : message
+                );
+
+            activity.runOnUiThread(() ->
+                webView.evaluateJavascript(
+                    "window.onMlKitTranslationError(" +
+                    safeMessage + "," + requestId + ");",
+                    null
                 )
             );
         }
     }
-
-    @JavascriptInterface
-    public String mlKitStatus() {
-        return "ML Kit bridge ready";
-    }
-
-    @JavascriptInterface
-public void translate(String text, String source, String target) {
-    if (text == null || text.trim().isEmpty()) {
-        sendError("No text provided");
-        return;
-    }
-
-    if (target == null || target.trim().isEmpty()) {
-        sendError("Target language is missing");
-        return;
-    }
-
-    if ("auto".equals(source)) {
-        detectAndTranslate(text, target);
-    } else {
-        startTranslation(text, source, target);
-    }
-}
-
-    private void detectAndTranslate(String text, String target) {
-    LanguageIdentifier languageIdentifier =
-        LanguageIdentification.getClient();
-
-    languageIdentifier
-        .identifyLanguage(text)
-        .addOnSuccessListener(languageCode -> {
-            languageIdentifier.close();
-
-            if ("und".equals(languageCode)) {
-                sendError("Language could not be detected");
-                return;
-            }
-
-            startTranslation(text, languageCode, target);
-        })
-        .addOnFailureListener(error -> {
-            languageIdentifier.close();
-            sendError(error.getMessage());
-        });
-    }
-
-        private void startTranslation(
-    String text,
-    String source,
-    String target
-) {
-    String sourceLanguage =
-        TranslateLanguage.fromLanguageTag(source);
-
-    String targetLanguage =
-        TranslateLanguage.fromLanguageTag(target);
-
-    if (sourceLanguage == null) {
-        sendError("Unsupported source language: " + source);
-        return;
-    }
-
-    if (targetLanguage == null) {
-        sendError("Unsupported target language: " + target);
-        return;
-    }
-
-    if (sourceLanguage.equals(targetLanguage)) {
-        sendResult(text);
-        return;
-    }
-
-    TranslatorOptions options =
-        new TranslatorOptions.Builder()
-            .setSourceLanguage(sourceLanguage)
-            .setTargetLanguage(targetLanguage)
-            .build();
-
-    Translator translator =
-        Translation.getClient(options);
-
-    DownloadConditions conditions =
-        new DownloadConditions.Builder()
-            .build();
-
-    translator
-        .downloadModelIfNeeded(conditions)
-        .addOnSuccessListener(unused -> {
-            translator
-                .translate(text)
-                .addOnSuccessListener(result -> {
-                    sendResult(result);
-                    translator.close();
-                })
-                .addOnFailureListener(error -> {
-                    sendError(error.getMessage());
-                    translator.close();
-                });
-        })
-        .addOnFailureListener(error -> {
-            sendError(error.getMessage());
-            translator.close();
-        });
-        }
-        
-    private void sendResult(String result) {
-        String safeResult =
-            JSONObject.quote(result == null ? "" : result);
-
-        activity.runOnUiThread(() ->
-            webView.evaluateJavascript(
-                "window.onMlKitTranslationResult(" +
-                safeResult +
-                ");",
-                null
-            )
-        );
-    }
-
-    private void sendError(String message) {
-        String safeMessage =
-            JSONObject.quote(
-                message == null
-                    ? "Unknown ML Kit error"
-                    : message
-            );
-
-        activity.runOnUiThread(() ->
-            webView.evaluateJavascript(
-                "window.onMlKitTranslationError(" +
-                safeMessage +
-                ");",
-                null
-            )
-        );
-    }
-}
 }
