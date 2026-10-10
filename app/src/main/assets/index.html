@@ -469,6 +469,7 @@ const translateInput = $('#translateInput');
 const translateResult = $('#translateResult');
 const sourceLang = $('#sourceLang');
 const targetLang = $('#targetLang');
+const TRANSLATE_ENDPOINT = 'https://yugzprojtyvter.netlify.app/.netlify/functions/translate';
 
 function updateTranslationCounters(){
   $('#translateInputCounter').textContent =
@@ -498,21 +499,58 @@ $('#swapLangBtn').onclick=()=>{
   flash('languages swapped');
 };
 
-$('#translateBtn').onclick=()=>{
-  if(!translateInput.value.trim()){
+$('#translateBtn').onclick=async()=>{
+  const text=translateInput.value.trim();
+
+  if(!text){
     flash('nothing to translate');
     return;
   }
 
-  translateResult.value =
-    '[DEMO] Translation service is not connected yet.';
+  $('#translationStatus').textContent='CONNECTING...';
+  $('#engineState').textContent='NETLIFY / REQUESTING';
 
-  updateTranslationCounters();
+  try{
+    const response=await fetch(TRANSLATE_ENDPOINT,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        text,
+        source:sourceLang.value,
+        target:targetLang.value
+      })
+    });
 
-  $('#engineState').textContent='DEMO / NOT CONNECTED';
-  $('#translationStatus').textContent='DEMO / OFFLINE';
+    const data=await response.json();
 
-  flash('translation demo');
+    if(!response.ok){
+      throw new Error(data.error||'translation failed');
+    }
+
+    translateResult.value=data.translatedText||'';
+
+    updateTranslationCounters();
+
+    $('#translationStatus').textContent='ONLINE / READY';
+    $('#engineState').textContent=
+      (data.engine||'netlify').toUpperCase();
+
+    flash('translation complete');
+
+  }catch(error){
+    console.error(error);
+
+    translateResult.value='';
+
+    updateTranslationCounters();
+
+    $('#translationStatus').textContent='CONNECTION ERROR';
+    $('#engineState').textContent='UNAVAILABLE';
+
+    flash('translation failed');
+  }
 };
 
 $('#copyTranslationBtn').onclick=()=>{
