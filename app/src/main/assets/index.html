@@ -465,6 +465,30 @@ $$('.tab').forEach(b=>b.onclick=()=>{
   }
 });
 
+  window.onMlKitTranslationResult = result => {
+  translateResult.value = result || '';
+
+  updateTranslationCounters();
+
+  $('#translationStatus').textContent = 'LOCAL / READY';
+  $('#engineState').textContent = 'ML KIT / ON-DEVICE';
+
+  flash('translation complete');
+};
+
+window.onMlKitTranslationError = message => {
+  console.error('ML Kit:', message);
+
+  translateResult.value = '';
+
+  updateTranslationCounters();
+
+  $('#translationStatus').textContent = 'ML KIT ERROR';
+  $('#engineState').textContent = 'UNAVAILABLE';
+
+  flash('translation failed');
+};
+
 const translateInput = $('#translateInput');
 const translateResult = $('#translateResult');
 const sourceLang = $('#sourceLang');
@@ -499,16 +523,24 @@ $('#swapLangBtn').onclick=()=>{
   flash('languages swapped');
 };
 
-$('#translateBtn').onclick=async()=>{
-  const text=translateInput.value.trim();
+$('#translateBtn').onclick = () => {
+  const text = translateInput.value.trim();
 
-  if(!text){
+  if (!text) {
     flash('nothing to translate');
     return;
   }
 
-  $('#translationStatus').textContent='CONNECTING...';
-  $('#engineState').textContent='NETLIFY / REQUESTING';
+  if (!window.AndroidBridge?.translateTest) {
+    flash('ML Kit bridge unavailable');
+    return;
+  }
+
+  $('#translationStatus').textContent = 'MODEL / CHECKING';
+  $('#engineState').textContent = 'ML KIT / PREPARING';
+
+  AndroidBridge.translateTest(text);
+};
 
   try{
     const response=await fetch(TRANSLATE_ENDPOINT,{
