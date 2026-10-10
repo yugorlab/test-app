@@ -61,5 +61,9 @@ public class MainActivity extends Activity {
                 clipboard.setPrimaryClip(ClipData.newPlainText("Teyvat Terminal", text == null ? "" : text));
             }
         }
-    }
+
+        @JavascriptInterface
+        public String mlKitStatus() {
+            return "ML Kit bridge ready";
+        }
 }
