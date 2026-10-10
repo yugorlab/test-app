@@ -13,7 +13,7 @@ android {
 
         def runNumber = System.getenv("GITHUB_RUN_NUMBER")
         versionCode runNumber ? 1000 + runNumber.toInteger() : 1000
-        versionName '0.3.3'
+        versionName '0.4.0'
     }
 
     signingConfigs {
