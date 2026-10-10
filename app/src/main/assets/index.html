@@ -76,6 +76,24 @@ h1{font-size:20px;line-height:1.05;letter-spacing:.12em;margin:8px 0 5px;font-we
 .translation.active{display:block}
 .translate-grid{padding:10px;display:grid;gap:9px}
 .field{border:1px solid var(--line);background:#080a0c;padding:9px}
+.language-row{display:grid;grid-template-columns:1fr 42px 1fr;gap:8px;align-items:end;}
+.language-select{display:grid;gap:6px;}
+.language-select label{color:var(--muted);font-size:8px;letter-spacing:.11em;text-transform:uppercase;}
+.language-select select{width:100%;height:42px;border:1px solid var(--line);outline:none;background:#080a0c;color:#e4e6e3;padding:0 10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;}
+.swap-btn{height:42px;border:1px solid var(--line);background:#0b0e11;color:var(--accent2);font-size:19px;cursor:pointer;}
+.swap-btn:active{transform:translateY(1px);background:#15191e;}
+.translate-main-btn{min-height:44px;}
+.result-field textarea{color:#f1f2ef;}
+.translation-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.translation-engine{display:flex;align-items:center;gap:7px;padding:8px 2px 2px;color:var(--dim);font-size:8px;letter-spacing:.1em;text-transform:uppercase;}
+.translation-engine strong{color:var(--warn);font-weight:500;}
+.translation-engine .pulse{width:5px;height:5px;flex:0 0 auto;}
+
+@media(max-width:420px){
+  .language-row{grid-template-columns:1fr 38px 1fr;gap:6px;}
+  .language-select select{font-size:9px;padding:0 6px;}
+  .translation-actions{grid-template-columns:1fr;}
+}
 .field label{display:flex;justify-content:space-between;color:var(--muted);font-size:8px;letter-spacing:.11em;text-transform:uppercase;margin-bottom:6px}
 .field textarea{width:100%;min-height:76px;border:0;outline:none;background:transparent;color:#e4e6e3;resize:vertical;font-size:13px;line-height:1.45}
 .note{font-size:9px;color:var(--dim);line-height:1.5;padding:0 10px 10px}
@@ -175,14 +193,100 @@ h1{font-size:20px;line-height:1.05;letter-spacing:.12em;margin:8px 0 5px;font-we
       </div>
     </section>
 
+
     <section class="panel translation" id="translationPanel">
-      <div class="panel-head"><strong>TRANSLATION PROTOTYPE</strong><span>RU / EN / TEYVAT</span></div>
-      <div class="translate-grid">
-        <div class="field"><label><span>Русский</span><span>manual / demo</span></label><textarea id="ruField" placeholder="Например: Здравствуйте. Вы меня понимаете?"></textarea></div>
-        <div class="field"><label><span>English</span><span>script source</span></label><textarea id="enField" placeholder="Hello. Do you understand me?"></textarea></div>
-        <button class="smallbtn accent" id="toScriptBtn">ENGLISH → TEYVAT SCREEN</button>
+  <div class="panel-head">
+    <strong>TRANSLATION</strong>
+    <span id="translationStatus">DEMO / OFFLINE</span>
+  </div>
+
+  <div class="translate-grid">
+
+    <div class="language-row">
+      <div class="language-select">
+        <label for="sourceLang">SOURCE LANGUAGE</label>
+        <select id="sourceLang">
+          <option value="auto" selected>AUTO DETECT</option>
+          <option value="en">ENGLISH</option>
+          <option value="ru">RUSSIAN</option>
+          <option value="de">GERMAN</option>
+          <option value="fr">FRENCH</option>
+          <option value="es">SPANISH</option>
+          <option value="it">ITALIAN</option>
+          <option value="pt">PORTUGUESE</option>
+          <option value="ja">JAPANESE</option>
+          <option value="ko">KOREAN</option>
+          <option value="zh">CHINESE</option>
+        </select>
       </div>
-      <div class="note"><b>V0.1:</b> тейватский слой работает полностью офлайн, потому что это отображение латинских букв нашим шрифтом. Полноценный RU ↔ EN перевод пока не встроен; поля оставлены для теста интерфейса и будущего переводчика.</div>
+
+      <button class="swap-btn" id="swapLangBtn" type="button" aria-label="Swap languages">
+        ⇄
+      </button>
+
+      <div class="language-select">
+        <label for="targetLang">TARGET LANGUAGE</label>
+        <select id="targetLang">
+          <option value="en" selected>ENGLISH</option>
+          <option value="ru">RUSSIAN</option>
+          <option value="de">GERMAN</option>
+          <option value="fr">FRENCH</option>
+          <option value="es">SPANISH</option>
+          <option value="it">ITALIAN</option>
+          <option value="pt">PORTUGUESE</option>
+          <option value="ja">JAPANESE</option>
+          <option value="ko">KOREAN</option>
+          <option value="zh">CHINESE</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>
+        <span>INPUT</span>
+        <span id="translateInputCounter">0 chars</span>
+      </label>
+
+      <textarea
+        id="translateInput"
+        placeholder="Enter text..."
+      ></textarea>
+    </div>
+
+    <button class="smallbtn accent translate-main-btn" id="translateBtn">
+      TRANSLATE
+    </button>
+
+    <div class="field result-field">
+      <label>
+        <span>RESULT</span>
+        <span id="translateResultCounter">0 chars</span>
+      </label>
+
+      <textarea
+        id="translateResult"
+        placeholder="Translation result..."
+        readonly
+      ></textarea>
+    </div>
+
+    <div class="translation-actions">
+      <button class="smallbtn" id="copyTranslationBtn">
+        COPY RESULT
+      </button>
+
+      <button class="smallbtn accent" id="sendToTerminalBtn">
+        SEND TO TERMINAL
+      </button>
+    </div>
+
+    <div class="translation-engine">
+      <span class="pulse"></span>
+      <span>TRANSLATION ENGINE:</span>
+      <strong id="engineState">DEMO / NOT CONNECTED</strong>
+    </div>
+
+  </div>
     </section>
 
 
@@ -361,8 +465,98 @@ $$('.tab').forEach(b=>b.onclick=()=>{
   }
 });
 
-$('#toScriptBtn').onclick=()=>{state.text=cleanText($('#enField').value,700);render();window.scrollTo({top:0,behavior:'smooth'});flash('screen updated')};
+const translateInput = $('#translateInput');
+const translateResult = $('#translateResult');
+const sourceLang = $('#sourceLang');
+const targetLang = $('#targetLang');
 
+function updateTranslationCounters(){
+  $('#translateInputCounter').textContent =
+    `${translateInput.value.length} chars`;
+
+  $('#translateResultCounter').textContent =
+    `${translateResult.value.length} chars`;
+}
+
+translateInput.addEventListener('input',updateTranslationCounters);
+
+$('#swapLangBtn').onclick=()=>{
+  if(sourceLang.value==='auto'){
+    flash('source language must be selected');
+    return;
+  }
+
+  const oldSource=sourceLang.value;
+  sourceLang.value=targetLang.value;
+  targetLang.value=oldSource;
+
+  const oldInput=translateInput.value;
+  translateInput.value=translateResult.value;
+  translateResult.value=oldInput;
+
+  updateTranslationCounters();
+  flash('languages swapped');
+};
+
+$('#translateBtn').onclick=()=>{
+  if(!translateInput.value.trim()){
+    flash('nothing to translate');
+    return;
+  }
+
+  translateResult.value =
+    '[DEMO] Translation service is not connected yet.';
+
+  updateTranslationCounters();
+
+  $('#engineState').textContent='DEMO / NOT CONNECTED';
+  $('#translationStatus').textContent='DEMO / OFFLINE';
+
+  flash('translation demo');
+};
+
+$('#copyTranslationBtn').onclick=()=>{
+  if(!translateResult.value.trim()){
+    flash('nothing to copy');
+    return;
+  }
+
+  copyTextCompat(
+    translateResult.value,
+    'translation copied'
+  );
+};
+
+$('#sendToTerminalBtn').onclick=()=>{
+  const text=translateResult.value.trim();
+
+  if(!text){
+    flash('no translation result');
+    return;
+  }
+
+  if(targetLang.value!=='en'){
+    flash('terminal requires english output');
+    return;
+  }
+
+  state.text=cleanText(text,700);
+  render();
+
+  const terminalTab=$('.tab[data-tab="terminal"]');
+
+  if(terminalTab){
+    terminalTab.click();
+  }
+
+  window.scrollTo({
+    top:0,
+    behavior:'smooth'
+  });
+
+  flash('sent to terminal');
+};
+  
 $('#docField').addEventListener('input',e=>{
   const start=e.target.selectionStart;
   state.docText=cleanText(e.target.value,12000);docCaret=Math.min(start,state.docText.length);
@@ -391,7 +585,6 @@ $('#sendBtn').onclick=()=>{
 };
 $('#clearLog').onclick=e=>protectedClear(e.currentTarget,()=>{localStorage.removeItem('teyvat-terminal-log');renderLog()},'clear log');
 
-$('#enField').addEventListener('input',()=>{if(!state.text)$('#saveState').textContent='english ready'});
 renderKeyboard();render();renderDoc();renderLog();
 </script>
 </body>
