@@ -493,7 +493,6 @@ const translateInput = $('#translateInput');
 const translateResult = $('#translateResult');
 const sourceLang = $('#sourceLang');
 const targetLang = $('#targetLang');
-const TRANSLATE_ENDPOINT = 'https://yugzprojtyvter.netlify.app/.netlify/functions/translate';
 
 function updateTranslationCounters(){
   $('#translateInputCounter').textContent =
@@ -541,19 +540,6 @@ $('#translateBtn').onclick = () => {
 
   AndroidBridge.translateTest(text);
 };
-
-  try{
-    const response=await fetch(TRANSLATE_ENDPOINT,{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json'
-      },
-      body:JSON.stringify({
-        text,
-        source:sourceLang.value,
-        target:targetLang.value
-      })
-    });
 
     const data=await response.json();
 
