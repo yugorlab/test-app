@@ -625,6 +625,10 @@ $('#clearLog').onclick=e=>protectedClear(e.currentTarget,()=>{localStorage.remov
 
 updateTranslationCounters();
 renderKeyboard();render();renderDoc();renderLog();
+  
+  if (window.AndroidBridge?.mlKitStatus) {
+  flash(AndroidBridge.mlKitStatus());
+  }
 </script>
 </body>
 </html>
