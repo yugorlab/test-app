@@ -530,7 +530,7 @@ $('#translateBtn').onclick = () => {
     return;
   }
 
-  if (!window.AndroidBridge?.translateTest) {
+  if (!window.AndroidBridge?.translate) {
     flash('ML Kit bridge unavailable');
     return;
   }
@@ -538,7 +538,7 @@ $('#translateBtn').onclick = () => {
   $('#translationStatus').textContent = 'MODEL / CHECKING';
   $('#engineState').textContent = 'ML KIT / PREPARING';
 
-  AndroidBridge.translateTest(text);
+  AndroidBridge.translate(text,sourceLang.value,targetLang.value);
 };
 
 $('#copyTranslationBtn').onclick=()=>{
