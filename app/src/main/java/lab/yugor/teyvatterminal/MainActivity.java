@@ -66,4 +66,5 @@ public class MainActivity extends Activity {
         public String mlKitStatus() {
             return "ML Kit bridge ready";
         }
+    }
 }
