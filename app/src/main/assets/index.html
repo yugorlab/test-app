@@ -493,6 +493,9 @@ const translateInput = $('#translateInput');
 const translateResult = $('#translateResult');
 const sourceLang = $('#sourceLang');
 const targetLang = $('#targetLang');
+const translateBtn = $('#translateBtn');
+
+let translationRequestId = 0;
 
 function updateTranslationCounters(){
   $('#translateInputCounter').textContent =
@@ -502,27 +505,77 @@ function updateTranslationCounters(){
     `${translateResult.value.length} chars`;
 }
 
-translateInput.addEventListener('input',updateTranslationCounters);
+function setTranslationBusy(busy){
+  translateBtn.disabled = busy;
+  translateBtn.textContent = busy ? 'TRANSLATING...' : 'TRANSLATE';
+}
 
-$('#swapLangBtn').onclick=()=>{
-  if(sourceLang.value==='auto'){
+function invalidateTranslationRequest(){
+  translationRequestId += 1;
+  setTranslationBusy(false);
+}
+
+window.onMlKitTranslationResult = (result, requestId) => {
+  if (requestId !== translationRequestId) {
+    return;
+  }
+
+  translateResult.value = result || '';
+  updateTranslationCounters();
+
+  $('#translationStatus').textContent = 'LOCAL / READY';
+  $('#engineState').textContent = 'ML KIT / ON-DEVICE';
+
+  setTranslationBusy(false);
+  flash('translation complete');
+};
+
+window.onMlKitTranslationError = (message, requestId) => {
+  if (requestId !== translationRequestId) {
+    return;
+  }
+
+  console.error('ML Kit:', message);
+
+  translateResult.value = '';
+  updateTranslationCounters();
+
+  $('#translationStatus').textContent = 'ML KIT ERROR';
+  $('#engineState').textContent = 'UNAVAILABLE';
+
+  setTranslationBusy(false);
+  flash('translation failed');
+};
+
+translateInput.addEventListener('input', () => {
+  invalidateTranslationRequest();
+  updateTranslationCounters();
+});
+
+sourceLang.addEventListener('change', invalidateTranslationRequest);
+targetLang.addEventListener('change', invalidateTranslationRequest);
+
+$('#swapLangBtn').onclick = () => {
+  if (sourceLang.value === 'auto') {
     flash('source language must be selected');
     return;
   }
 
-  const oldSource=sourceLang.value;
-  sourceLang.value=targetLang.value;
-  targetLang.value=oldSource;
+  invalidateTranslationRequest();
 
-  const oldInput=translateInput.value;
-  translateInput.value=translateResult.value;
-  translateResult.value=oldInput;
+  const oldSource = sourceLang.value;
+  sourceLang.value = targetLang.value;
+  targetLang.value = oldSource;
+
+  const oldInput = translateInput.value;
+  translateInput.value = translateResult.value;
+  translateResult.value = oldInput;
 
   updateTranslationCounters();
   flash('languages swapped');
 };
 
-$('#translateBtn').onclick = () => {
+translateBtn.onclick = () => {
   const text = translateInput.value.trim();
 
   if (!text) {
@@ -535,10 +588,18 @@ $('#translateBtn').onclick = () => {
     return;
   }
 
+  const requestId = ++translationRequestId;
+
+  setTranslationBusy(true);
   $('#translationStatus').textContent = 'DOWNLOADING MODEL...';
   $('#engineState').textContent = 'ML KIT / PREPARING';
 
-  AndroidBridge.translate(text,sourceLang.value,targetLang.value);
+  AndroidBridge.translate(
+    text,
+    sourceLang.value,
+    targetLang.value,
+    requestId
+  );
 };
 
 $('#copyTranslationBtn').onclick=()=>{
